@@ -6,10 +6,10 @@ export class ProductsController {
   /** 상품 생성 api */
   createProduct = async (req, res, next) => {
     try {
-      const { title, content, } = req.body;
+      const { title, content } = req.body;
       const status = 'FOR_SALE';
 
-      const createdProduct = await this.ProductsService.createProduct(
+      const createdProduct = await this.productsService.createProduct(
         title,
         content,
         status,

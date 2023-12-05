@@ -3,6 +3,7 @@ import { ProductRepository } from '../repositories/products.repository.js';
 export class ProductsService {
   productRepository = new ProductRepository();
 
+  //생성
   createProduct = async (title, content, status, userId) => {
     const createdProduct = await this.productRepository.createProduct(
       title,
@@ -18,6 +19,7 @@ export class ProductsService {
     };
   };
 
+  // 목록 조회
   // password를 제외한 상태로, Controller에게 response 전달한다.
   findAllProducts = async () => {
     const products = await this.productRepository.findAllProducts();
@@ -37,6 +39,7 @@ export class ProductsService {
     });
   };
 
+  // 상세 조회
   getProductById = async productId => {
     const product = await this.productRepository.getProductById(productId);
 
@@ -48,14 +51,18 @@ export class ProductsService {
     };
   };
 
+  //수정
   updateProduct = async (productId, title, content, status) => {
+    // 저장소(Repository)에게 특정 게시글 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
       throw new Error('존재하지 않는 게시글입니다.');
     }
 
-    await this.productRepository.getProductById(title, content, status);
+    // 저장소(Repository)에게 데이터 수정을 요청합니다.
+    await this.productRepository.updateProduct(title, content, status);
 
+    // 변경된 데이터를 조회합니다.
     const updateProduct = await this.productRepository.getProductById(
       productId,
     );
@@ -67,12 +74,14 @@ export class ProductsService {
     };
   };
 
+  //삭제
   deleteProduct = async productId => {
+    // 저장소(Repository)에게 특정 게시글 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
       throw new Error('존재하지 않는 게시글입니다.');
     }
-
+    // 저장소(Repository)에게 데이터 삭제를 요청합니다.
     await this.productRepository.deleteProduct(productId);
 
     return product;

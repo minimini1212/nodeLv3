@@ -1,6 +1,7 @@
 import { prisma } from '../utils/prisma/index.js';
 
 export class ProductRepository {
+  // 생성
   createProduct = async (title, content, status) => {
     const createdProduct = await prisma.products.create({
       data: {
@@ -12,11 +13,13 @@ export class ProductRepository {
     return createdProduct;
   };
 
+  //목록 조회
   findAllProducts = async () => {
     const products = await prisma.products.findMany();
     return products;
   };
 
+  //상세 조회
   getProductById = async productId => {
     const product = await prisma.products.findFirst({
       where: {
@@ -27,6 +30,7 @@ export class ProductRepository {
     return product;
   };
 
+  //수정
   updateProduct = async (productId, title, content, status) => {
     const updatedProduct = await prisma.products.update({
       where: {
@@ -40,5 +44,16 @@ export class ProductRepository {
     });
 
     return updatedProduct;
+  };
+
+  //삭제
+  deleteProduct = async productId => {
+    const deleteProduct = await prisma.products.delete({
+      where: {
+        productId: +productId,
+      },
+    });
+
+    return deleteProduct;
   };
 }
