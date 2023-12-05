@@ -1,12 +1,12 @@
 import { UsersRepository } from '../repositories/users.repository.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class UsersService {
   usersRepository = new UsersRepository();
 
   //회원가입
   createUser = async (email, name, password, confirmPassword) => {
-    const user = await this.usersRepository.createUser(email, name, password);
     const salt = 12;
 
     // 회원가입 비밀번호 조건
@@ -22,35 +22,61 @@ export class UsersService {
     }
 
     // checkEmail 함수를 이용한 이메일 조건을 만족하는가
-    if (!checkEmail(user.email)) {
+    if (!checkEmail(email)) {
       throw new Error('이메일 형식을 맞춰주세요');
     }
 
     // checkPwd 함수를 이용한 패스워드 조건을 만족하는가
-    if (!checkPwd(user.password)) {
+    if (!checkPwd(password)) {
       throw new Error('password는 최소 6자리 이상이어야 합니다.');
     }
 
     // 패스워드, 패스워드 검증 값이 일치하는가
-    if (user.password !== confirmPassword) {
+    if (password !== confirmPassword) {
       throw new Error('password와 confirmPassword가 일치하지 않습니다.');
     }
 
     // email 또는 name 포함하는 객체찾기
-    const existUser = await this.usersRepository.findUser(email, name);
+    const existUser = await this.usersRepository.findUser(email);
     if (existUser) {
-      throw new Error('Email이나 name이 이미 사용 중입니다.');
+      throw new Error('email이 이미 사용 중입니다.');
     }
-
     // 비밀번호 암호화
-    const hashPassword = bcrypt.hashSync(user.password, salt);
+    const hashPassword = bcrypt.hashSync(password, salt);
 
-    const createUser = {
-      email: user.email,
-      name: user.name,
-      passwor: hashPassword,
-    };
+    const user = await this.usersRepository.createUser(
+      email,
+      name,
+      hashPassword,
+    );
 
-    return createUser;
+    return user;
+  };
+
+  //로그인
+  getUser = async (email, password) => {
+    const existUser = await this.usersRepository.findUser(email);
+    if (!existUser) {
+      throw new Error('사용자가 존재하지 않습니다.');
+    }
+    console.log(existUser);
+    // 데이터베이스에 저장된 해싱된 비밀번호와 입력된 password를 비교 match가 true면 일치
+    const match = bcrypt.compareSync(password, existUser.password);
+    if (!match) {
+      throw new Error('비밀번호가 일치하지 않습니다.');
+    }
+    // 토큰의 만료시간 설정 12시간..
+    const token = jwt.sign(
+      { userId: existUser.userId },
+      process.env.JWT_ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: '12h',
+      },
+    );
+    const user = {
+      token
+    }
+   
+      return user;
   };
 }

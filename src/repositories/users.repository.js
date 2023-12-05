@@ -15,10 +15,11 @@ export class UsersRepository {
 
 
   //유저 찾기
-  findUser = async(email, name) => {
+  findUser = async(email) => {
     const existUser = await prisma.users.findFirst({
       where: {
-        OR: [{ name }, { email }],
+        email,
+        //OR: [{ name }, { email }],
       },
     });
     return existUser;

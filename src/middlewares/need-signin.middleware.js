@@ -16,7 +16,7 @@ export default async (req, res, next) => {
     // 복호화 및 검증
     const { userId } = jwt.verify(authToken, process.env.JWT_ACCESS_TOKEN_SECRET);
     prisma.users.findFirst({ where: { userId } }).then(user => {
-      res.locals.user = user;
+      req.user = user;
       next();
     });
   } catch (error) {
