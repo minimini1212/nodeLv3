@@ -10,7 +10,7 @@ export class ProductsService {
       content,
       status,
     );
-
+    console.log(res.locals.user)
     return {
       productId: createdProduct.productId,
       title: createdProduct.title,

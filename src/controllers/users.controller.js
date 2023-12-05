@@ -13,16 +13,16 @@ export class UsersController {
         password,
         confirmPassword,
       );
+      console.log(user);
 
       const createUser = {
         email: user.email,
         name: user.name,
-        password: user.passowrd
-      }
+      };
 
-      return res.status(201).json({user: createUser});
+      return res.status(201).json({ user: createUser });
     } catch (err) {
-      next(err)
+      next(err);
     }
   };
 
@@ -31,13 +31,13 @@ export class UsersController {
     try {
       const { email, password } = req.body;
       const user = await this.usersService.getUser(email, password);
-
-      return user;
-    } catch (err) {
-      console.log(err);
-      res.status(400).json({
-        errorMessage: '에러가 발생하였습니다.',
+      const token = user.token;
+      return res.status(200).json({
+        token,
+        message: '로그인에 성공하였습니다.',
       });
+    } catch (err) {
+      next(err);
     }
   };
 }

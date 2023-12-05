@@ -14,10 +14,10 @@ export class ProductsController {
         content,
         status,
       );
-
+      next();
       return res.status(201).json({ data: createdProduct });
     } catch (err) {
-      console.log(err);
+      next(err)
     }
   };
 
