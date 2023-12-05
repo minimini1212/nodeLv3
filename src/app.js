@@ -4,13 +4,12 @@ const app = express();
 import user from './routers/users.router.js';
 import products from './routers/products.router.js';
 import auths from './routers/auth.router.js';
-import authMiddleware from './middlewares/need-signin.middleware.js';
 import errorMiddleware from './middlewares/error-handler.middleware.js';
 
 app.use(express.json());
 
 app.use('/api', express.urlencoded({ extended: false }), user);
-app.use('/api', authMiddleware, auths);
+app.use('/api', auths);
 app.use('/api', products);
 app.use(errorMiddleware);
 
