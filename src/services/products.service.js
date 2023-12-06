@@ -5,34 +5,47 @@ export class ProductsService {
 
   //생성
   createProduct = async (title, content, status, userId) => {
+    if (!title || !content) {
+      throw new Error ('상품명 또는 상품 내용을 입력해주세요.')
+    }
+    
     const createdProduct = await this.productRepository.createProduct(
       title,
       content,
       status,
+      userId,
     );
-    console.log(res.locals.user)
+
     return {
       productId: createdProduct.productId,
       title: createdProduct.title,
       content: createdProduct.content,
       createdAt: createdProduct.createdAt,
+      userId: createdProduct.userId,
     };
   };
 
   // 목록 조회
   // password를 제외한 상태로, Controller에게 response 전달한다.
-  findAllProducts = async () => {
-    const products = await this.productRepository.findAllProducts();
-
-    products.sort((a, b) => {
-      return b.createdAt - a.createdAt;
-    });
+  findAllProducts = async sort => {
+    sort = sort.toLowerCase();
+    let newSort = sort === 'desc' || sort === 'asc' ? sort : 'desc';
+    // if (sort === 'desc' || sort === 'asc') {
+    //   newSort = sort;
+    // } else {
+    //   newSort = 'desc';
+    // }
+    const products = await this.productRepository.findAllProducts(newSort);
+    if (products.length === 0) {
+      throw new Error('상품이 존재하지 않습니다.');
+    }
 
     return products.map(product => {
       return {
         productId: product.productId,
         title: product.title,
         content: product.content,
+        name: product.User.name,
         status: product.status,
         createdAt: product.createdAt,
       };
@@ -42,7 +55,9 @@ export class ProductsService {
   // 상세 조회
   getProductById = async productId => {
     const product = await this.productRepository.getProductById(productId);
-
+    if (!product) {
+      throw new Error('상품이 존재하지 않습니다.');
+    }
     return {
       title: product.title,
       content: product.content,
@@ -52,15 +67,26 @@ export class ProductsService {
   };
 
   //수정
-  updateProduct = async (productId, title, content, status) => {
-    // 저장소(Repository)에게 특정 게시글 하나를 요청합니다.
+  updateProduct = async (productId, title, content, status, userId) => {
+    // 저장소(Repository)에게 특정 상품 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
-      throw new Error('존재하지 않는 게시글입니다.');
+      throw new Error('상품이 존재하지 않습니다.');
     }
 
+    if (userId !== product.userId) {
+      throw new Error('작성자가 일치하지 않습니다.')
+    }
+
+    console.log(product)
+    console.log(product.userId)
     // 저장소(Repository)에게 데이터 수정을 요청합니다.
-    await this.productRepository.updateProduct(title, content, status);
+    await this.productRepository.updateProduct(
+      productId,
+      title,
+      content,
+      status,
+    );
 
     // 변경된 데이터를 조회합니다.
     const updateProduct = await this.productRepository.getProductById(
@@ -75,11 +101,15 @@ export class ProductsService {
   };
 
   //삭제
-  deleteProduct = async productId => {
-    // 저장소(Repository)에게 특정 게시글 하나를 요청합니다.
+  deleteProduct = async (productId, userId) => {
+    // 저장소(Repository)에게 특정 상품 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
-      throw new Error('존재하지 않는 게시글입니다.');
+      throw new Error('상품이 존재하지 않습니다.');
+    }
+    
+    if (userId !== product.userId) {
+      throw new Error('작성자가 일치하지 않습니다.')
     }
     // 저장소(Repository)에게 데이터 삭제를 요청합니다.
     await this.productRepository.deleteProduct(productId);
