@@ -4,17 +4,16 @@ export class ProductsService {
   productRepository = new ProductRepository();
 
   //생성
-  createProduct = async (title, content, status, UserId) => {
-
+  createProduct = async (title, content, status, userId) => {
     if (!title || !content) {
       throw new Error ('상품명 또는 상품 내용을 입력해주세요.')
     }
-
+    
     const createdProduct = await this.productRepository.createProduct(
       title,
       content,
       status,
-      UserId,
+      userId,
     );
 
     return {
@@ -22,7 +21,7 @@ export class ProductsService {
       title: createdProduct.title,
       content: createdProduct.content,
       createdAt: createdProduct.createdAt,
-      UserId: createdProduct.UserId,
+      userId: createdProduct.userId,
     };
   };
 
@@ -75,10 +74,12 @@ export class ProductsService {
       throw new Error('상품이 존재하지 않습니다.');
     }
 
-    if (userId !== product.UserId) {
+    if (userId !== product.userId) {
       throw new Error('작성자가 일치하지 않습니다.')
     }
 
+    console.log(product)
+    console.log(product.userId)
     // 저장소(Repository)에게 데이터 수정을 요청합니다.
     await this.productRepository.updateProduct(
       productId,
@@ -106,7 +107,8 @@ export class ProductsService {
     if (!product) {
       throw new Error('상품이 존재하지 않습니다.');
     }
-    if (userId !== product.UserId) {
+    
+    if (userId !== product.userId) {
       throw new Error('작성자가 일치하지 않습니다.')
     }
     // 저장소(Repository)에게 데이터 삭제를 요청합니다.

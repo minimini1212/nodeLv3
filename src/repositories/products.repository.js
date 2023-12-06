@@ -2,13 +2,13 @@ import { prisma } from '../utils/prisma/index.js';
 
 export class ProductRepository {
   // 생성
-  createProduct = async (title, content, status, UserId) => {
+  createProduct = async (title, content, status, userId) => {
     const createdProduct = await prisma.products.create({
       data: {
         title,
         content,
         status,
-        UserId
+        userId
       },
     });
     return createdProduct;
@@ -48,7 +48,7 @@ export class ProductRepository {
       productId: +productId,
     },
     select: {
-      UserId: true,
+      userId: true,
       title: true,
       content: true,
       User: {

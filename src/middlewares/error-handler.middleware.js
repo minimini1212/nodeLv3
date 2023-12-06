@@ -32,8 +32,16 @@ export default function (err, req, res, next) {
       res.status(400).json({ errorMessage: '작성자가 일치하지 않습니다.' });
       break;
     case '상품명 또는 상품 내용을 입력해주세요.':
-      res.status(400).json({ errorMessage: '상품명 또는 상품 내용을 입력해주세요.' });
+      res
+        .status(400)
+        .json({ errorMessage: '상품명 또는 상품 내용을 입력해주세요.' });
       break;
+    case '로그인 후 이용 가능한 기능입니다.':
+      res
+        .status(400)
+        .json({ errorMessage: '로그인 후 이용 가능한 기능입니다.' });
+      break;
+
     default:
       res.status(500).json({ errorMessage: '서버 내부 에러가 발생했습니다.' });
   }

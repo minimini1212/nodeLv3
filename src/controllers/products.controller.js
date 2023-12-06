@@ -8,25 +8,25 @@ export class ProductsController {
     try {
       const { title, content } = req.body;
       const status = 'FOR_SALE';
-      const UserId = req.user.userId;
+      const userId = req.user.userId;
 
       const createdProduct = await this.productsService.createProduct(
         title,
         content,
         status,
-        UserId
+        userId,
       );
-      
+
       const product = {
         title: createdProduct.title,
         content: createdProduct.content,
         status: createdProduct.status,
-        UserId: createdProduct.UserId
-      }
+        userId: createdProduct.UserId,
+      };
 
       return res.status(201).json({ product });
     } catch (err) {
-      next(err)
+      next(err);
     }
   };
 
@@ -67,7 +67,7 @@ export class ProductsController {
         title,
         content,
         status,
-        userId
+        userId,
       );
 
       return res.status(200).json({ data: updatedProduct });
@@ -82,11 +82,14 @@ export class ProductsController {
     try {
       const { productId } = req.params;
       const userId = req.user.userId;
-      const deleteProduct = await this.productsService.deleteProduct(productId, userId);
-      
-      return res.status(200).json({ 
+      const deleteProduct = await this.productsService.deleteProduct(
+        productId,
+        userId,
+      );
+
+      return res.status(200).json({
         data: deleteProduct.productId,
-        message: "상품 삭제에 성공하였습니다." 
+        message: '상품 삭제에 성공하였습니다.',
       });
     } catch (err) {
       next(err);
