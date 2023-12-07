@@ -13,6 +13,6 @@ app.use('/api', auths);
 app.use('/api', products);
 app.use(errorMiddleware);
 
-app.listen(8080, () => {
-  console.log('서버가 요청을 받을 준비가 됐어요');
+app.listen(process.env.SERVER_PORT, () => {
+  console.log(`${process.env.SERVER_PORT}포트로 서버가 요청을 받을 준비가 됐어요`);
 });

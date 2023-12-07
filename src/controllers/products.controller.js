@@ -7,6 +7,10 @@ export class ProductsController {
   createProduct = async (req, res, next) => {
     try {
       const { title, content } = req.body;
+      if (!title || !content) {
+        throw new Error('상품명 또는 상품 내용을 입력해주세요.');
+      }
+
       const status = 'FOR_SALE';
       const userId = req.user.userId;
 
@@ -21,7 +25,7 @@ export class ProductsController {
         title: createdProduct.title,
         content: createdProduct.content,
         status: createdProduct.status,
-        userId: createdProduct.UserId,
+        userId: createdProduct.userId,
       };
 
       return res.status(201).json({ product });
@@ -34,7 +38,9 @@ export class ProductsController {
   getProducts = async (req, res, next) => {
     try {
       let { sort } = req.query;
-      const products = await this.productsService.findAllProducts(sort);
+      sort = sort.toLowerCase();
+      let newSort = sort === 'desc' || sort === 'asc' ? sort : 'desc';
+      const products = await this.productsService.findAllProducts(newSort);
 
       return res.status(200).json({ data: products });
     } catch (err) {

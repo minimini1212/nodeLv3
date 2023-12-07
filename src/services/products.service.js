@@ -5,9 +5,6 @@ export class ProductsService {
 
   //생성
   createProduct = async (title, content, status, userId) => {
-    if (!title || !content) {
-      throw new Error ('상품명 또는 상품 내용을 입력해주세요.')
-    }
     
     const createdProduct = await this.productRepository.createProduct(
       title,
@@ -27,14 +24,8 @@ export class ProductsService {
 
   // 목록 조회
   // password를 제외한 상태로, Controller에게 response 전달한다.
-  findAllProducts = async sort => {
-    sort = sort.toLowerCase();
-    let newSort = sort === 'desc' || sort === 'asc' ? sort : 'desc';
-    // if (sort === 'desc' || sort === 'asc') {
-    //   newSort = sort;
-    // } else {
-    //   newSort = 'desc';
-    // }
+  findAllProducts = async newSort => {
+
     const products = await this.productRepository.findAllProducts(newSort);
     if (products.length === 0) {
       throw new Error('상품이 존재하지 않습니다.');
@@ -61,6 +52,7 @@ export class ProductsService {
     return {
       title: product.title,
       content: product.content,
+      name: product.User.name,
       status: product.status,
       createdAt: product.createdAt,
     };
@@ -78,8 +70,6 @@ export class ProductsService {
       throw new Error('작성자가 일치하지 않습니다.')
     }
 
-    console.log(product)
-    console.log(product.userId)
     // 저장소(Repository)에게 데이터 수정을 요청합니다.
     await this.productRepository.updateProduct(
       productId,
