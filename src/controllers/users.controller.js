@@ -13,14 +13,13 @@ export class UsersController {
         password,
         confirmPassword,
       );
-      console.log(user);
 
       const createUser = {
         email: user.email,
         name: user.name,
       };
 
-      return res.status(201).json({ user: createUser });
+      return res.status(201).json({ createUser });
     } catch (err) {
       next(err);
     }

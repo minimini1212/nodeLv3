@@ -42,7 +42,7 @@ export class ProductsController {
       let newSort = sort === 'desc' || sort === 'asc' ? sort : 'desc';
       const products = await this.productsService.findAllProducts(newSort);
 
-      return res.status(200).json({ data: products });
+      return res.status(200).json({ products });
     } catch (err) {
       next(err);
     }
@@ -54,8 +54,13 @@ export class ProductsController {
     try {
       const { productId } = req.params;
       const product = await this.productsService.getProductById(productId);
-
-      return res.status(200).json({ data: product });
+      return res.status(200).json({ 
+        title: product.title,
+        content: product.content,
+        name: product.name,
+        status: product.status,
+        createdAt: product.createdAt
+      });
     } catch (err) {
       next(err);
     }
@@ -76,7 +81,11 @@ export class ProductsController {
         userId,
       );
 
-      return res.status(200).json({ data: updatedProduct });
+      return res.status(200).json({ 
+        title: updatedProduct.title,
+        content: updatedProduct.content,
+        status: updatedProduct.status,
+       });
     } catch (err) {
       next(err);
     }
