@@ -19,7 +19,6 @@ export class UsersRepository {
     const existUser = await prisma.users.findFirst({
       where: {
         email,
-        //OR: [{ name }, { email }],
       },
     });
     return existUser;
