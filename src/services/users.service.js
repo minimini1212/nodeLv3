@@ -22,23 +22,32 @@ export class UsersService {
 
     // checkEmail 함수를 이용한 이메일 조건을 만족하는가
     if (!checkEmail(email)) {
-      throw new Error('이메일 형식을 맞춰주세요');
+      const errors = new Error('이메일 형식을 맞춰주세요');
+        errors.statusCode = 400;
+        throw errors
     }
 
     // checkPwd 함수를 이용한 패스워드 조건을 만족하는가
     if (!checkPwd(password)) {
-      throw new Error('비밀번호는 최소 6자리 이상이어야 합니다.');
+      const errors = new Error('비밀번호는 최소 6자리 이상이어야 합니다.');
+        errors.statusCode = 400;
+        throw errors
+      
     }
 
     // 패스워드, 패스워드 검증 값이 일치하는가
     if (password !== confirmPassword) {
-      throw new Error('비밀번호가 일치하지 않습니다.');
+      const errors = new Error('비밀번호가 일치하지 않습니다.');
+        errors.statusCode = 409;
+        throw errors
     }
 
     // email을 포함하는 객체찾기
     const existUser = await this.usersRepository.findUser(email);
     if (existUser) {
-      throw new Error('email이 이미 사용 중입니다.');
+      const errors = new Error('email이 이미 사용 중입니다.');
+        errors.statusCode = 409;
+        throw errors
     }
     // 비밀번호 암호화
     const hashPassword = bcrypt.hashSync(password, parseInt(process.env.PASSWORD_HASH_SALT_ROUNDS));
@@ -56,12 +65,16 @@ export class UsersService {
   getUser = async (email, password) => {
     const existUser = await this.usersRepository.findUser(email);
     if (!existUser) {
-      throw new Error('사용자가 존재하지 않습니다.');
+      const errors = new Error('사용자가 존재하지 않습니다.');
+        errors.statusCode = 400;
+        throw errors
     }
     // 데이터베이스에 저장된 해싱된 비밀번호와 입력된 password를 비교 match가 true면 일치
     const match = bcrypt.compareSync(password, existUser.password);
     if (!match) {
-      throw new Error('비밀번호가 일치하지 않습니다.');
+      const errors = new Error('비밀번호가 일치하지 않습니다.');
+        errors.statusCode = 400;
+        throw errors
     }
     // 토큰의 만료시간 설정 12시간..
     const token = jwt.sign(

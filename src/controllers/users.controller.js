@@ -7,6 +7,11 @@ export class UsersController {
   SignUp = async (req, res, next) => {
     try {
       const { email, name, password, confirmPassword } = req.body;
+      if (!email || !name || !password || !confirmPassword) {
+        const errors = new Error('입력란을 확인해주세요.');
+        errors.statusCode = 400;
+        throw errors
+      }
       const user = await this.usersService.createUser(
         email,
         name,
@@ -29,6 +34,11 @@ export class UsersController {
   SignIn = async (req, res, next) => {
     try {
       const { email, password } = req.body;
+      if (!email || !password) {
+        const errors = new Error('입력란을 확인해주세요.');
+        errors.statusCode = 400;
+        throw errors
+      }
       const user = await this.usersService.getUser(email, password);
       const token = user.token;
       return res.status(200).json({
