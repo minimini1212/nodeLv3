@@ -28,7 +28,9 @@ export class ProductsService {
 
     const products = await this.productRepository.findAllProducts(newSort);
     if (products.length === 0) {
-      throw new Error('상품이 존재하지 않습니다.');
+      const errors = new Error('상품이 존재하지 않습니다.');
+        errors.statusCode = 404;
+        throw errors
     }
 
     return products.map(product => {
@@ -47,7 +49,9 @@ export class ProductsService {
   getProductById = async productId => {
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
-      throw new Error('상품이 존재하지 않습니다.');
+      const errors = new Error('상품이 존재하지 않습니다.');
+        errors.statusCode = 404;
+        throw errors
     }
     return {
       title: product.title,
@@ -63,11 +67,15 @@ export class ProductsService {
     // 저장소(Repository)에게 특정 상품 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
-      throw new Error('상품이 존재하지 않습니다.');
+      const errors = new Error('상품이 존재하지 않습니다.');
+        errors.statusCode = 404;
+        throw errors
     }
 
     if (userId !== product.userId) {
-      throw new Error('작성자가 일치하지 않습니다.')
+      const errors = new Error('작성자가 일치하지 않습니다.');
+        errors.statusCode = 401;
+        throw errors
     }
 
     // 저장소(Repository)에게 데이터 수정을 요청합니다.
@@ -95,11 +103,15 @@ export class ProductsService {
     // 저장소(Repository)에게 특정 상품 하나를 요청합니다.
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
-      throw new Error('상품이 존재하지 않습니다.');
+      const errors = new Error('상품이 존재하지 않습니다.');
+        errors.statusCode = 404;
+        throw errors
     }
     
     if (userId !== product.userId) {
-      throw new Error('작성자가 일치하지 않습니다.')
+      const errors = new Error('작성자가 일치하지 않습니다.');
+        errors.statusCode = 401;
+        throw errors
     }
     // 저장소(Repository)에게 데이터 삭제를 요청합니다.
     await this.productRepository.deleteProduct(productId);

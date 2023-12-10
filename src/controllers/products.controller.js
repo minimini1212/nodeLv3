@@ -8,7 +8,9 @@ export class ProductsController {
     try {
       const { title, content } = req.body;
       if (!title || !content) {
-        throw new Error('상품명 또는 상품 내용을 입력해주세요.');
+        const errors = new Error('입력란을 확인해주세요.');
+        errors.statusCode = 400;
+        throw errors
       }
 
       const status = 'FOR_SALE';
@@ -72,6 +74,11 @@ export class ProductsController {
     try {
       const { productId } = req.params;
       const { title, content, status } = req.body;
+      if (!title || !content || !status) {
+        const errors = new Error('입력란을 확인해주세요.');
+        errors.statusCode = 400;
+        throw errors
+      }
       const userId = req.user.userId;
       const updatedProduct = await this.productsService.updateProduct(
         productId,
